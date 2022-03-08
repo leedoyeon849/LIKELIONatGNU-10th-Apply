@@ -74,7 +74,7 @@ def check_questions():
 #            print("학교별 개별문항 입력을 종료합니다.")
 
     # 총 문항 개수
-    total_question_number: int = 4
+    total_question_number: int = 5
     return questions, total_question_number
 
 # %%
@@ -84,19 +84,18 @@ def df_to_md(df: pd.DataFrame, questions: dict, total_question_number):
     for idx in range(len(df)):
         # 지원서
         candidate: pd.DataFrame = df.loc[idx]
-
+        
         # 주요 항목
         name = clean_text(candidate[questions['q_name']])
         major = clean_text(candidate[questions['q_major']])
         track = clean_text(candidate[questions['q_track']])
-
         # 포트폴리오 항목이 없을경우 예외처리
         try:
             portfolio = candidate[questions['portfolio']]
         except:
             portfolio = ''
-
-        timestamp, email, phone,  = candidate[0], candidate[1], candidate[3]
+   
+        timestamp, email, name, phone, grade = candidate[0], candidate[1], candidate[3], candidate[6], candidate[5]
         file_name = f"{name}_{major}_{track}"
 
         # markdown 파일 생성
@@ -104,11 +103,11 @@ def df_to_md(df: pd.DataFrame, questions: dict, total_question_number):
         f.write(f"# {file_name}\n\n")     # h1
         # 지원자 정보
         f.write(
-            f"|email|phone|portfolio|timestamp\n|:-|:-|:-|:-|\n|{email}|{phone}|{portfolio}|{timestamp}|\n\n")
+            f"|이름|학과|학년/학번|이메일|전화번호\n|:-|:-|:-|:-|:-|\n|{name}|{candidate[questions['q_major']]}|{grade}|{email}|{phone}|\n\n")
 
         # 문항 및 답변
         f.write("---\n")
-        for q_no in range(1, total_question_number):
+        for q_no in range(1, 6):
             f.write(
                 f"## {questions[f'q_no{q_no}']}\n{candidate[questions[f'q_no{q_no}']]}\n\n")
         print(f"[Success] {file_name}.md 생성 완료")
